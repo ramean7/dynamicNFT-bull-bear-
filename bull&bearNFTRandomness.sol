@@ -172,6 +172,11 @@ contract DynamicNFT2 is ERC721, ERC721Enumerable, ERC721URIStorage, VRFConsumerB
         Trend trend 
     ) internal returns (uint256 requestId) {
         // Will revert if subscription is not set and funded.
+
+        if (currentTrend == trend) {
+        return 0;
+        }
+
         requestId = s_vrfCoordinator.requestRandomWords(
             VRFV2PlusClient.RandomWordsRequest({
                 keyHash: keyHash,
@@ -208,11 +213,7 @@ contract DynamicNFT2 is ERC721, ERC721Enumerable, ERC721URIStorage, VRFConsumerB
         require(s_requests[_requestId].exists, "request not found");
         s_requests[_requestId].fulfilled = true;
         s_requests[_requestId].randomWords = _randomWords;
-        Trend trend = trendMap[_requestId];
-
-        if(currentTrend == trend){
-            return;
-        }
+        Trend trend = trendMap[_requestId];        
 
         if(trend == Trend.Bull){
             
@@ -352,4 +353,5 @@ contract DynamicNFT2 is ERC721, ERC721Enumerable, ERC721URIStorage, VRFConsumerB
     }
     
 }
+
 
